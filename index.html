@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Yuno - Agentic Finance Worker for Mantle</title>
+    <meta
+      name="description"
+      content="Yuno is a capable on-chain worker for Mantle: research, reason, execute, and prove autonomous DeFi decisions."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="topbar" aria-label="Yuno control bar">
+        <div class="brand-block">
+          <div class="brand-mark" aria-hidden="true">Y</div>
+          <div>
+            <p class="eyebrow">Mantle Turing Test Hackathon 2026</p>
+            <h1>Yuno</h1>
+          </div>
+        </div>
+        <div class="top-actions">
+          <div class="chain-pill">
+            <span class="status-dot"></span>
+            Mantle Sepolia
+          </div>
+          <button id="connectWallet" class="primary-action" type="button">
+            Connect Wallet
+          </button>
+        </div>
+      </section>
+
+      <section class="hero-grid">
+        <div class="hero-copy">
+          <p class="section-kicker">Capable AI for verifiable finance</p>
+          <h2>The agent that earns its reputation on-chain.</h2>
+          <p>
+            Yuno researches Mantle markets, debates risk with specialist agents,
+            executes approved strategies, and publishes decision proofs for a
+            portable reputation trail.
+          </p>
+          <div class="hero-actions">
+            <button id="runCycle" class="primary-action large" type="button">
+              Run Agent Cycle
+            </button>
+            <button id="publishDecision" class="ghost-action large" type="button">
+              Publish Proof
+            </button>
+          </div>
+        </div>
+
+        <div class="signal-stage" aria-label="Live Yuno agent map">
+          <canvas id="agentCanvas" width="900" height="560"></canvas>
+          <div class="stage-overlay">
+            <span>perceive</span>
+            <span>reason</span>
+            <span>execute</span>
+            <span>prove</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <aside class="control-panel" aria-label="Strategy controls">
+          <div class="panel-header">
+            <p class="section-kicker">Risk Constitution</p>
+            <h3>Worker limits</h3>
+          </div>
+
+          <label class="field">
+            <span>Max volatile exposure</span>
+            <input id="volatilityCap" type="range" min="5" max="70" value="30" />
+            <strong><span id="volatilityValue">30</span>%</strong>
+          </label>
+
+          <label class="field">
+            <span>Minimum confidence</span>
+            <input id="confidenceFloor" type="range" min="40" max="95" value="72" />
+            <strong><span id="confidenceValue">72</span>%</strong>
+          </label>
+
+          <label class="field">
+            <span>Max drawdown trigger</span>
+            <input id="drawdownLimit" type="range" min="2" max="25" value="8" />
+            <strong><span id="drawdownValue">8</span>%</strong>
+          </label>
+
+          <div class="scenario-list" aria-label="Market scenarios">
+            <button class="scenario-button active" data-scenario="defensive" type="button">
+              Defensive Rotation
+            </button>
+            <button class="scenario-button" data-scenario="momentum" type="button">
+              Momentum Breakout
+            </button>
+            <button class="scenario-button" data-scenario="yield" type="button">
+              RWA Yield Hunt
+            </button>
+          </div>
+        </aside>
+
+        <section class="agent-panel" aria-label="Agent reasoning">
+          <div class="panel-header split">
+            <div>
+              <p class="section-kicker">Multi-agent debate</p>
+              <h3 id="scenarioTitle">Defensive Rotation</h3>
+            </div>
+            <div class="reputation-meter">
+              <span>Reputation</span>
+              <strong id="reputationScore">82.4</strong>
+            </div>
+          </div>
+
+          <div class="debate-grid">
+            <article>
+              <span class="agent-role">Alpha Agent</span>
+              <p id="alphaVoice">
+                Smart wallets are reducing volatile exposure while mETH depth
+                holds. Opportunity favors defensive yield with optional upside.
+              </p>
+            </article>
+            <article>
+              <span class="agent-role">Risk Agent</span>
+              <p id="riskVoice">
+                Cap volatile allocation at 30%. Avoid shallow pools and reject
+                any route that increases drawdown risk beyond user limits.
+              </p>
+            </article>
+            <article>
+              <span class="agent-role">Execution Agent</span>
+              <p id="executionVoice">
+                Route into a 55% mETH, 30% USDY, 15% MNT strategy and monitor
+                for slippage or abnormal liquidity movement.
+              </p>
+            </article>
+          </div>
+
+          <div class="thesis-board">
+            <div>
+              <span>Thesis</span>
+              <strong id="thesisText">Defensive yield beats raw beta this cycle.</strong>
+            </div>
+            <div>
+              <span>Action</span>
+              <strong id="actionText">Rebalance to mETH / USDY / MNT</strong>
+            </div>
+            <div>
+              <span>Confidence</span>
+              <strong id="confidenceScore">78%</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="portfolio-panel" aria-label="Portfolio comparison">
+          <div class="panel-header split">
+            <div>
+              <p class="section-kicker">Human vs AI</p>
+              <h3>Allocation result</h3>
+            </div>
+            <button id="resetCycle" class="icon-button" type="button" aria-label="Reset cycle">
+              Reset
+            </button>
+          </div>
+
+          <div class="allocation-chart">
+            <div class="bar-row">
+              <span>mETH</span>
+              <div><i id="barMeth"></i></div>
+              <strong id="allocMeth">55%</strong>
+            </div>
+            <div class="bar-row">
+              <span>USDY</span>
+              <div><i id="barUsdy"></i></div>
+              <strong id="allocUsdy">30%</strong>
+            </div>
+            <div class="bar-row">
+              <span>MNT</span>
+              <div><i id="barMnt"></i></div>
+              <strong id="allocMnt">15%</strong>
+            </div>
+          </div>
+
+          <div class="metric-strip">
+            <div>
+              <span>Expected ROI</span>
+              <strong id="roiMetric">+4.8%</strong>
+            </div>
+            <div>
+              <span>Max Drawdown</span>
+              <strong id="drawdownMetric">-3.2%</strong>
+            </div>
+            <div>
+              <span>Proof Hash</span>
+              <strong id="proofHash">pending</strong>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section class="ledger-panel" aria-label="Decision ledger">
+        <div class="panel-header split">
+          <div>
+            <p class="section-kicker">On-chain memory</p>
+            <h3>Decision ledger</h3>
+          </div>
+          <span id="walletState">Wallet not connected</span>
+        </div>
+        <div id="decisionLog" class="decision-log"></div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
