@@ -23,6 +23,11 @@ Yuno turns agent behavior into a verifiable work loop:
 4. Prove the decision through hashes and a Mantle decision registry.
 5. Learn by updating reputation based on ROI, confidence accuracy, and drawdown.
 
+The demo makes the loop visible through live signal intake, an action queue,
+memory updates, and a decision ledger. Judges can see what Yuno observed, what
+it decided, which constraints it followed, and how the decision affects its
+future reputation.
+
 ## Tracks
 
 - AI Alpha & Data
@@ -42,9 +47,10 @@ the memory and reputation layer for autonomous workers.
    Hunt.
 3. Run the agent cycle.
 4. Show the Alpha Agent, Risk Agent, and Execution Agent debate.
-5. Show the selected allocation and Human vs AI metrics.
-6. Publish a proof and show the decision ledger.
-7. Explain how the Solidity registry records compact proofs on Mantle.
+5. Show signal intake, action queue, and memory update.
+6. Show the selected allocation and Human vs AI metrics.
+7. Publish a proof and show the decision ledger.
+8. Explain how the Solidity registry records compact proofs on Mantle.
 
 ## Future Work
 

@@ -14,6 +14,17 @@ const scenarios = {
     roi: 4.8,
     drawdown: 3.2,
     allocation: { mETH: 55, USDY: 30, MNT: 15 },
+    signals: [
+      "Whale rotation away from high beta wallets",
+      "mETH pool depth stable across core routes",
+      "RWA yield spread remains positive after slippage",
+    ],
+    queue: [
+      "Reject volatile allocation above constitution cap",
+      "Simulate mETH / USDY / MNT rebalance",
+      "Publish thesis and action hash to registry",
+    ],
+    memory: { accuracy: 81, compliance: "Passed", delta: 1.6 },
   },
   momentum: {
     title: "Momentum Breakout",
@@ -30,6 +41,17 @@ const scenarios = {
     roi: 7.6,
     drawdown: 6.8,
     allocation: { mETH: 35, USDY: 20, MNT: 45 },
+    signals: [
+      "MNT momentum confirmed by wallet clustering",
+      "Liquidity depth supports controlled route size",
+      "Social velocity rising without matching drawdown spike",
+    ],
+    queue: [
+      "Check confidence against minimum threshold",
+      "Increase MNT only inside risk cap",
+      "Schedule emergency review on drawdown trigger",
+    ],
+    memory: { accuracy: 86, compliance: "Passed", delta: 2.1 },
   },
   yield: {
     title: "RWA Yield Hunt",
@@ -46,6 +68,17 @@ const scenarios = {
     roi: 5.4,
     drawdown: 2.4,
     allocation: { mETH: 30, USDY: 60, MNT: 10 },
+    signals: [
+      "USDY carry leads risk-adjusted opportunity set",
+      "Volatility compression favors yield over beta",
+      "Exit liquidity remains above agent threshold",
+    ],
+    queue: [
+      "Rotate toward USDY carry allocation",
+      "Keep mETH as liquidity and upside ballast",
+      "Recheck oracle freshness before execution",
+    ],
+    memory: { accuracy: 83, compliance: "Passed", delta: 1.8 },
   },
 };
 
@@ -53,7 +86,13 @@ const state = {
   scenario: "defensive",
   wallet: null,
   lastDecision: null,
+  provider: null,
+  signer: null,
 };
+
+const REGISTRY_ABI = [
+  "function recordDecision(bytes32 thesisHash, bytes32 actionHash, uint16 confidenceBps, int32 expectedRoiBps, uint32 maxDrawdownBps, string metadataURI) external returns (uint256)",
+];
 
 const els = {
   connectWallet: document.querySelector("#connectWallet"),
@@ -68,6 +107,12 @@ const els = {
   confidenceValue: document.querySelector("#confidenceValue"),
   drawdownLimit: document.querySelector("#drawdownLimit"),
   drawdownValue: document.querySelector("#drawdownValue"),
+  signalList: document.querySelector("#signalList"),
+  actionQueue: document.querySelector("#actionQueue"),
+  accuracyMetric: document.querySelector("#accuracyMetric"),
+  complianceMetric: document.querySelector("#complianceMetric"),
+  reputationDelta: document.querySelector("#reputationDelta"),
+  cycleState: document.querySelector("#cycleState"),
 };
 
 function shortAddress(address) {
@@ -116,6 +161,11 @@ function applyScenario() {
   document.querySelector("#allocMeth").textContent = `${mETH}%`;
   document.querySelector("#allocUsdy").textContent = `${USDY}%`;
   document.querySelector("#allocMnt").textContent = `${MNT}%`;
+  els.signalList.innerHTML = data.signals.map((signal) => `<li>${signal}</li>`).join("");
+  els.actionQueue.innerHTML = data.queue.map((action) => `<li>${action}</li>`).join("");
+  els.accuracyMetric.textContent = `${data.memory.accuracy}%`;
+  els.complianceMetric.textContent = data.memory.compliance;
+  els.reputationDelta.textContent = `+${data.memory.delta.toFixed(1)}`;
 
   document.querySelectorAll(".scenario-button").forEach((button) => {
     button.classList.toggle("active", button.dataset.scenario === state.scenario);
@@ -135,6 +185,9 @@ function buildDecision(status = "simulated") {
     roi: data.roi,
     drawdown: data.drawdown,
     allocation: data.allocation,
+    signals: data.signals,
+    actionQueue: data.queue,
+    memoryUpdate: data.memory,
     constitution: {
       maxVolatileExposure: Number(els.volatilityCap.value),
       minimumConfidence: Number(els.confidenceFloor.value),
@@ -168,6 +221,7 @@ function addLedgerEntry(decision) {
 function runCycle() {
   const decision = buildDecision("debated");
   state.lastDecision = decision;
+  els.cycleState.textContent = "Cycle debated";
   document.querySelector("#proofHash").textContent = `${decision.hash.slice(0, 18)}...`;
   addLedgerEntry(decision);
 }
@@ -189,7 +243,7 @@ async function connectWallet() {
       params: [{ chainId: "0x138b" }],
     });
   } catch (error) {
-    if (error && error.code === 4902) {
+  if (error && error.code === 4902) {
       await window.ethereum.request({
         method: "wallet_addEthereumChain",
         params: [
@@ -204,25 +258,73 @@ async function connectWallet() {
       });
     }
   }
+
+  if (window.ethers) {
+    state.provider = new window.ethers.BrowserProvider(window.ethereum);
+    state.signer = await state.provider.getSigner();
+  }
 }
 
 async function publishDecision() {
   const decision = state.lastDecision || buildDecision("ready");
   state.lastDecision = { ...decision, payload: { ...decision.payload, status: "published" } };
+  els.cycleState.textContent = "Proof prepared";
   document.querySelector("#proofHash").textContent = `${decision.hash.slice(0, 18)}...`;
-  addLedgerEntry(state.lastDecision);
 
   if (!state.wallet) {
+    addLedgerEntry(state.lastDecision);
     els.walletState.textContent = "Proof prepared. Connect wallet to submit on Mantle.";
     return;
   }
 
-  els.walletState.textContent =
-    "Proof ready. Add deployed registry address in app.js to submit a real transaction.";
+  const registryAddress = window.YUNO_REGISTRY_ADDRESS;
+  if (!registryAddress || !window.ethers || !state.signer) {
+    addLedgerEntry(state.lastDecision);
+    els.walletState.textContent =
+      "Proof ready. Deploy registry and refresh to submit a real Mantle transaction.";
+    return;
+  }
+
+  try {
+    els.walletState.textContent = "Waiting for wallet signature...";
+    const registry = new window.ethers.Contract(registryAddress, REGISTRY_ABI, state.signer);
+    const data = currentScenario();
+    const thesisHash = window.ethers.id(decision.payload.thesis);
+    const actionHash = window.ethers.id(JSON.stringify(decision.payload.actionQueue));
+    const confidenceBps = data.confidence * 100;
+    const expectedRoiBps = Math.round(data.roi * 100);
+    const maxDrawdownBps = Math.round(data.drawdown * 100);
+    const metadataURI = `data:application/json,${encodeURIComponent(JSON.stringify(decision.payload))}`;
+    const tx = await registry.recordDecision(
+      thesisHash,
+      actionHash,
+      confidenceBps,
+      expectedRoiBps,
+      maxDrawdownBps,
+      metadataURI,
+    );
+    els.walletState.textContent = `Submitted: ${tx.hash.slice(0, 10)}...`;
+    const receipt = await tx.wait();
+    state.lastDecision = {
+      ...state.lastDecision,
+      payload: {
+        ...state.lastDecision.payload,
+        status: "recorded",
+        transactionHash: receipt.hash,
+      },
+    };
+    els.cycleState.textContent = "Proof recorded";
+    addLedgerEntry(state.lastDecision);
+    els.walletState.textContent = `Recorded on Mantle: ${receipt.hash.slice(0, 10)}...`;
+  } catch (error) {
+    addLedgerEntry(state.lastDecision);
+    els.walletState.textContent = error?.shortMessage || error?.message || "Transaction rejected";
+  }
 }
 
 function resetCycle() {
   state.lastDecision = null;
+  els.cycleState.textContent = "Cycle ready";
   document.querySelector("#proofHash").textContent = "pending";
   els.decisionLog.innerHTML = "";
   applyScenario();

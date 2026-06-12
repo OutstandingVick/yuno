@@ -197,6 +197,57 @@
         </section>
       </section>
 
+      <section class="autonomy-panel" aria-label="Yuno autonomy stack">
+        <div class="panel-header split">
+          <div>
+            <p class="section-kicker">Autonomy Stack</p>
+            <h3>Closed-loop worker state</h3>
+          </div>
+          <div class="cycle-state">
+            <span id="cycleState">Cycle ready</span>
+          </div>
+        </div>
+
+        <div class="autonomy-grid">
+          <article class="signal-card">
+            <div class="mini-header">
+              <span>01</span>
+              <strong>Signal Intake</strong>
+            </div>
+            <ul id="signalList"></ul>
+          </article>
+
+          <article class="signal-card">
+            <div class="mini-header">
+              <span>02</span>
+              <strong>Action Queue</strong>
+            </div>
+            <ol id="actionQueue"></ol>
+          </article>
+
+          <article class="signal-card memory-card">
+            <div class="mini-header">
+              <span>03</span>
+              <strong>Memory Update</strong>
+            </div>
+            <div class="memory-grid">
+              <div>
+                <span>Confidence accuracy</span>
+                <strong id="accuracyMetric">81%</strong>
+              </div>
+              <div>
+                <span>Risk compliance</span>
+                <strong id="complianceMetric">Passed</strong>
+              </div>
+              <div>
+                <span>Reputation delta</span>
+                <strong id="reputationDelta">+1.6</strong>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <section class="ledger-panel" aria-label="Decision ledger">
         <div class="panel-header split">
           <div>
@@ -209,6 +260,8 @@
       </section>
     </main>
 
+    <script src="deployed-address.js"></script>
+    <script src="node_modules/ethers/dist/ethers.umd.min.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

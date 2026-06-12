@@ -10,6 +10,9 @@ Built for the Mantle Turing Test Hackathon 2026.
 
 - Multi-agent reasoning: Alpha Agent, Risk Agent, and Execution Agent.
 - User-defined risk constitution for autonomous strategy limits.
+- Signal intake across wallets, liquidity, yield, and market behavior.
+- Action queue that shows the agent's next operational steps.
+- Memory update with confidence accuracy, risk compliance, and reputation delta.
 - Human vs AI portfolio comparison.
 - Decision proof hashing and a visible on-chain memory ledger.
 - Mantle Sepolia wallet connection.
@@ -20,7 +23,8 @@ Built for the Mantle Turing Test Hackathon 2026.
 This prototype is dependency-free.
 
 ```bash
-python3 -m http.server 4173
+npm install
+npm run dev
 ```
 
 Open `http://localhost:4173`.
@@ -42,6 +46,15 @@ It stores compact decision records:
 The UI currently prepares decision proofs and wallet connection. After deploying
 the registry to Mantle Sepolia, wire the deployed address into `app.js` for live
 transaction submission.
+
+## Deployment Path
+
+1. Install dependencies with `npm install`.
+2. Compile `contracts/YunoDecisionRegistry.sol` with `npm run compile`.
+3. Copy `.env.example` to `.env` and set `PRIVATE_KEY`.
+4. Deploy to Mantle Sepolia with `npm run deploy:mantle-sepolia`.
+5. Refresh the app. `deployed-address.js` will contain the registry address and
+   the Publish Proof button will submit a real `recordDecision` transaction.
 
 ## Hackathon Positioning
 

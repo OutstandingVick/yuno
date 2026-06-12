@@ -48,6 +48,7 @@ button {
 .topbar,
 .workspace,
 .ledger-panel,
+.autonomy-panel,
 .hero-grid {
   border: 1px solid var(--line);
   background: rgba(16, 21, 17, 0.72);
@@ -270,6 +271,7 @@ h3 {
 .control-panel,
 .agent-panel,
 .portfolio-panel,
+.autonomy-panel,
 .ledger-panel {
   padding: 22px;
 }
@@ -462,6 +464,100 @@ h3 {
   color: var(--cyan);
 }
 
+.autonomy-panel {
+  border-top: 0;
+}
+
+.cycle-state {
+  min-width: 140px;
+  padding: 10px 12px;
+  border: 1px solid rgba(156, 255, 125, 0.26);
+  border-radius: 8px;
+  color: var(--mint);
+  font-weight: 900;
+  text-align: center;
+  background: rgba(156, 255, 125, 0.08);
+}
+
+.autonomy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.2fr;
+  gap: 12px;
+}
+
+.signal-card {
+  min-height: 210px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.mini-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.mini-header span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(107, 231, 216, 0.36);
+  border-radius: 8px;
+  color: var(--cyan);
+  font-weight: 900;
+}
+
+.mini-header strong {
+  font-size: 1.05rem;
+}
+
+.signal-card ul,
+.signal-card ol {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.signal-card li::marker {
+  color: var(--mint);
+}
+
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.memory-grid > div {
+  min-height: 116px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.memory-grid span {
+  display: block;
+  color: var(--soft);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.memory-grid strong {
+  display: block;
+  margin-top: 12px;
+  color: var(--text);
+  font-size: 1.45rem;
+}
+
 .ledger-panel {
   border-top: 0;
   border-radius: 0 0 8px 8px;
@@ -502,7 +598,8 @@ h3 {
 
 @media (max-width: 1120px) {
   .hero-grid,
-  .workspace {
+  .workspace,
+  .autonomy-grid {
     grid-template-columns: 1fr;
   }
 
@@ -541,6 +638,7 @@ h3 {
 
   .debate-grid,
   .thesis-board,
+  .memory-grid,
   .ledger-entry {
     grid-template-columns: 1fr;
   }

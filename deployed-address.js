@@ -1,0 +1,1 @@
+window.YUNO_REGISTRY_ADDRESS = "";
