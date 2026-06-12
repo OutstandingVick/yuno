@@ -1,0 +1,179 @@
+{
+  "contractName": "YunoDecisionRegistry",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "decisionId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "thesisHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes32",
+          "name": "actionHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint16",
+          "name": "confidenceBps",
+          "type": "uint16"
+        },
+        {
+          "indexed": false,
+          "internalType": "int32",
+          "name": "expectedRoiBps",
+          "type": "int32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint32",
+          "name": "maxDrawdownBps",
+          "type": "uint32"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "metadataURI",
+          "type": "string"
+        }
+      ],
+      "name": "DecisionRecorded",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "decisionCount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "decisionId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getDecision",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "operator",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "thesisHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "actionHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "uint16",
+              "name": "confidenceBps",
+              "type": "uint16"
+            },
+            {
+              "internalType": "int32",
+              "name": "expectedRoiBps",
+              "type": "int32"
+            },
+            {
+              "internalType": "uint32",
+              "name": "maxDrawdownBps",
+              "type": "uint32"
+            },
+            {
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "metadataURI",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct YunoDecisionRegistry.Decision",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "thesisHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "actionHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "uint16",
+          "name": "confidenceBps",
+          "type": "uint16"
+        },
+        {
+          "internalType": "int32",
+          "name": "expectedRoiBps",
+          "type": "int32"
+        },
+        {
+          "internalType": "uint32",
+          "name": "maxDrawdownBps",
+          "type": "uint32"
+        },
+        {
+          "internalType": "string",
+          "name": "metadataURI",
+          "type": "string"
+        }
+      ],
+      "name": "recordDecision",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "decisionId",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080604052348015600e575f5ffd5b5061080d8061001c5f395ff3fe608060405234801561000f575f5ffd5b506004361061003f575f3560e01c8063100b63cb14610043578063ab80013614610059578063af7548481461006c575b5f5ffd5b5f545b6040519081526020015b60405180910390f35b610046610067366004610498565b61008c565b61007f61007a366004610535565b61028b565b604051610050919061057a565b5f6127108661ffff1611156100de5760405162461bcd60e51b81526020600482015260136024820152720c6dedcccd2c8cadcc6ca40e8dede40d0d2ced606b1b60448201526064015b60405180910390fd5b5f8054905090505f604051806101000160405280336001600160a01b031681526020018a81526020018981526020018861ffff1681526020018760030b81526020018663ffffffff16815260200142815260200185858080601f0160208091040260200160405190810160405280939291908181526020018383808284375f920182905250939094525050835460018082018655948252602091829020845160069092020180546001600160a01b0319166001600160a01b03909216919091178155908301519381019390935550604081015160028301556060810151600383018054608084015160a085015161ffff90941665ffffffffffff19909216919091176201000063ffffffff928316021769ffffffff00000000000019166601000000000000919093160291909117905560c0810151600483015560e0810151909190600582019061022f90826106a6565b505050336001600160a01b0316817f4c9f952feafd7ad5187ecc5f61e4d842af53cebe366005692db059242996b05a8a8a8a8a8a8a8a6040516102789796959493929190610765565b60405180910390a3979650505050505050565b6102e26040518061010001604052805f6001600160a01b031681526020015f81526020015f81526020015f61ffff1681526020015f60030b81526020015f63ffffffff1681526020015f8152602001606081525090565b5f5482106103255760405162461bcd60e51b815260206004820152601060248201526f36b4b9b9b4b733903232b1b4b9b4b7b760811b60448201526064016100d5565b5f8281548110610337576103376107c3565b5f9182526020918290206040805161010081018252600690930290910180546001600160a01b0316835260018101549383019390935260028301549082015260038083015461ffff8116606084015262010000810490910b608083015263ffffffff66010000000000009091041660a0820152600482015460c082015260058201805491929160e0840191906103cc90610617565b80601f01602080910402602001604051908101604052809291908181526020018280546103f890610617565b80156104435780601f1061041a57610100808354040283529160200191610443565b820191905f5260205f20905b81548152906001019060200180831161042657829003601f168201915b5050505050815250509050919050565b5f5f83601f840112610463575f5ffd5b50813567ffffffffffffffff81111561047a575f5ffd5b602083019150836020828501011115610491575f5ffd5b9250929050565b5f5f5f5f5f5f5f60c0888a0312156104ae575f5ffd5b8735965060208801359550604088013561ffff811681146104cd575f5ffd5b94506060880135600381900b81146104e3575f5ffd5b9350608088013563ffffffff811681146104fb575f5ffd5b925060a088013567ffffffffffffffff811115610516575f5ffd5b6105228a828b01610453565b989b979a50959850939692959293505050565b5f60208284031215610545575f5ffd5b5035919050565b5f81518084528060208401602086015e5f602082860101526020601f19601f83011685010191505092915050565b6020815260018060a01b038251166020820152602082015160408201526040820151606082015261ffff60608301511660808201525f60808301516105c460a084018260030b9052565b5060a083015163ffffffff811660c08401525060c083015160e083015260e0830151610100808401526105fb61012084018261054c565b949350505050565b634e487b7160e01b5f52604160045260245ffd5b600181811c9082168061062b57607f821691505b60208210810361064957634e487b7160e01b5f52602260045260245ffd5b50919050565b601f8211156106a157828211156106a157805f5260205f20601f840160051c602085101561067a57505f5b90810190601f840160051c035f5b8181101561069d575f83820155600101610688565b5050505b505050565b815167ffffffffffffffff8111156106c0576106c0610603565b6106d4816106ce8454610617565b8461064f565b6020601f821160018114610706575f83156106ef5750848201515b5f19600385901b1c1916600184901b17845561075e565b5f84815260208120601f198516915b828110156107355787850151825560209485019460019092019101610715565b508482101561075257868401515f19600387901b60f8161c191681555b505060018360011b0184555b5050505050565b87815286602082015261ffff861660408201528460030b606082015263ffffffff8416608082015260c060a08201528160c0820152818360e08301375f81830160e090810191909152601f909201601f191601019695505050505050565b634e487b7160e01b5f52603260045260245ffdfea264697066735822122031b543d17fa12a56ed386bdbb8154e11ebfdaa6e74b906d9df9693cdafe6379264736f6c63430008230033"
+}

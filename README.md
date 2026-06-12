@@ -49,6 +49,17 @@ transaction submission.
 
 ## Deployment Path
 
+Browser wallet path:
+
+1. Install dependencies with `npm install`.
+2. Compile `contracts/YunoDecisionRegistry.sol` with `npm run compile`.
+3. Start the app with `npm run dev`.
+4. Connect a Mantle Sepolia wallet.
+5. Click Deploy Registry and approve the wallet transaction.
+6. Click Publish Proof and approve the `recordDecision` transaction.
+
+Terminal deployer path:
+
 1. Install dependencies with `npm install`.
 2. Compile `contracts/YunoDecisionRegistry.sol` with `npm run compile`.
 3. Copy `.env.example` to `.env` and set `PRIVATE_KEY`.

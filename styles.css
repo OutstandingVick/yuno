@@ -568,6 +568,16 @@ h3 {
   font-size: 0.9rem;
 }
 
+.registry-state {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.045);
+  overflow-wrap: anywhere;
+}
+
 .ledger-entry {
   display: grid;
   grid-template-columns: 120px 1fr 140px;

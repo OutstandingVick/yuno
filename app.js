@@ -88,6 +88,7 @@ const state = {
   lastDecision: null,
   provider: null,
   signer: null,
+  registryAddress: window.localStorage.getItem("yunoRegistryAddress") || window.YUNO_REGISTRY_ADDRESS || "",
 };
 
 const REGISTRY_ABI = [
@@ -96,10 +97,12 @@ const REGISTRY_ABI = [
 
 const els = {
   connectWallet: document.querySelector("#connectWallet"),
+  deployRegistry: document.querySelector("#deployRegistry"),
   runCycle: document.querySelector("#runCycle"),
   publishDecision: document.querySelector("#publishDecision"),
   resetCycle: document.querySelector("#resetCycle"),
   walletState: document.querySelector("#walletState"),
+  registryState: document.querySelector("#registryState"),
   decisionLog: document.querySelector("#decisionLog"),
   volatilityCap: document.querySelector("#volatilityCap"),
   volatilityValue: document.querySelector("#volatilityValue"),
@@ -139,6 +142,17 @@ function updateRangeLabels() {
   els.volatilityValue.textContent = els.volatilityCap.value;
   els.confidenceValue.textContent = els.confidenceFloor.value;
   els.drawdownValue.textContent = els.drawdownLimit.value;
+}
+
+function updateRegistryState() {
+  if (state.registryAddress) {
+    els.registryState.textContent = `Registry ready: ${state.registryAddress}`;
+    els.deployRegistry.textContent = "Registry Ready";
+    return;
+  }
+
+  els.registryState.textContent = "Registry not deployed";
+  els.deployRegistry.textContent = "Deploy Registry";
 }
 
 function applyScenario() {
@@ -265,6 +279,39 @@ async function connectWallet() {
   }
 }
 
+async function deployRegistry() {
+  if (!state.wallet || !state.signer) {
+    await connectWallet();
+  }
+
+  if (!state.signer || !window.ethers) {
+    els.walletState.textContent = "Connect an EVM wallet before deploying.";
+    return;
+  }
+
+  try {
+    els.walletState.textContent = "Preparing registry deployment...";
+    const response = await fetch("artifacts/YunoDecisionRegistry.json");
+    if (!response.ok) {
+      throw new Error("Compile the registry first with npm run compile.");
+    }
+
+    const artifact = await response.json();
+    const factory = new window.ethers.ContractFactory(artifact.abi, artifact.bytecode, state.signer);
+    els.walletState.textContent = "Waiting for deployment signature...";
+    const contract = await factory.deploy();
+    state.registryAddress = await contract.getAddress();
+    updateRegistryState();
+    els.walletState.textContent = `Deploying: ${state.registryAddress}`;
+    await contract.deploymentTransaction().wait();
+    window.localStorage.setItem("yunoRegistryAddress", state.registryAddress);
+    updateRegistryState();
+    els.walletState.textContent = `Registry deployed: ${shortAddress(state.registryAddress)}`;
+  } catch (error) {
+    els.walletState.textContent = error?.shortMessage || error?.message || "Deployment rejected";
+  }
+}
+
 async function publishDecision() {
   const decision = state.lastDecision || buildDecision("ready");
   state.lastDecision = { ...decision, payload: { ...decision.payload, status: "published" } };
@@ -277,7 +324,7 @@ async function publishDecision() {
     return;
   }
 
-  const registryAddress = window.YUNO_REGISTRY_ADDRESS;
+  const registryAddress = state.registryAddress;
   if (!registryAddress || !window.ethers || !state.signer) {
     addLedgerEntry(state.lastDecision);
     els.walletState.textContent =
@@ -343,11 +390,13 @@ document.querySelectorAll(".scenario-button").forEach((button) => {
 });
 
 els.connectWallet.addEventListener("click", connectWallet);
+els.deployRegistry.addEventListener("click", deployRegistry);
 els.runCycle.addEventListener("click", runCycle);
 els.publishDecision.addEventListener("click", publishDecision);
 els.resetCycle.addEventListener("click", resetCycle);
 
 updateRangeLabels();
+updateRegistryState();
 applyScenario();
 runCycle();
 
