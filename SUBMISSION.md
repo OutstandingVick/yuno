@@ -28,6 +28,10 @@ memory updates, and a decision ledger. Judges can see what Yuno observed, what
 it decided, which constraints it followed, and how the decision affects its
 future reputation.
 
+Yuno also reads a live Mantle Sepolia feed for block number, gas, and connected
+wallet balance. That snapshot is included in the proof payload so the on-chain
+record is tied to the conditions the agent saw before acting.
+
 ## Tracks
 
 - AI Alpha & Data
@@ -54,8 +58,15 @@ the memory and reputation layer for autonomous workers.
 
 ## Future Work
 
-- Deploy `YunoDecisionRegistry` to Mantle Sepolia.
 - Connect live Mantle DeFi and RWA data sources.
 - Add real strategy execution behind explicit user approval.
 - Add ERC-8004-compatible identity and reputation metadata.
 - Add social share cards for viral agent decisions.
+
+## Current On-Chain Path
+
+Yuno includes a compiled `YunoDecisionRegistry` artifact and supports two Mantle
+Sepolia deployment paths: browser wallet deployment from the app, or terminal
+deployment through `npm run deploy:mantle-sepolia` with a local private key. Once
+the registry is deployed, Publish Proof submits a real `recordDecision`
+transaction.

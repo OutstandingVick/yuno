@@ -89,6 +89,13 @@ const state = {
   provider: null,
   signer: null,
   registryAddress: window.localStorage.getItem("yunoRegistryAddress") || window.YUNO_REGISTRY_ADDRESS || "",
+  liveSignals: {
+    chain: "Mantle Sepolia",
+    blockNumber: null,
+    gasGwei: null,
+    walletBalance: null,
+    updatedAt: null,
+  },
 };
 
 const REGISTRY_ABI = [
@@ -98,11 +105,15 @@ const REGISTRY_ABI = [
 const els = {
   connectWallet: document.querySelector("#connectWallet"),
   deployRegistry: document.querySelector("#deployRegistry"),
+  refreshSignals: document.querySelector("#refreshSignals"),
   runCycle: document.querySelector("#runCycle"),
   publishDecision: document.querySelector("#publishDecision"),
   resetCycle: document.querySelector("#resetCycle"),
   walletState: document.querySelector("#walletState"),
   registryState: document.querySelector("#registryState"),
+  liveBlock: document.querySelector("#liveBlock"),
+  liveGas: document.querySelector("#liveGas"),
+  liveBalance: document.querySelector("#liveBalance"),
   decisionLog: document.querySelector("#decisionLog"),
   volatilityCap: document.querySelector("#volatilityCap"),
   volatilityValue: document.querySelector("#volatilityValue"),
@@ -155,6 +166,74 @@ function updateRegistryState() {
   els.deployRegistry.textContent = "Deploy Registry";
 }
 
+function formatMnt(value) {
+  const amount = Number(value);
+  if (!Number.isFinite(amount)) {
+    return "unknown";
+  }
+
+  if (amount === 0) {
+    return "0.000";
+  }
+
+  if (amount < 0.001) {
+    return "<0.001";
+  }
+
+  return amount.toFixed(3);
+}
+
+function renderLiveSignals() {
+  els.liveBlock.textContent = state.liveSignals.blockNumber
+    ? Number(state.liveSignals.blockNumber).toLocaleString()
+    : "unavailable";
+  els.liveGas.textContent = state.liveSignals.gasGwei
+    ? `${Number(state.liveSignals.gasGwei).toFixed(3)} gwei`
+    : "unavailable";
+  els.liveBalance.textContent =
+    state.liveSignals.walletBalance === null ? "connect" : `${formatMnt(state.liveSignals.walletBalance)} MNT`;
+}
+
+async function fetchMantleSignals() {
+  try {
+    let provider = state.provider;
+    if (!provider && window.ethers) {
+      provider = new window.ethers.JsonRpcProvider("https://rpc.sepolia.mantle.xyz");
+    }
+
+    if (!provider) {
+      throw new Error("Ethers not loaded");
+    }
+
+    const [blockNumber, feeData] = await Promise.all([
+      provider.getBlockNumber(),
+      provider.getFeeData(),
+    ]);
+    const gasGwei = feeData.gasPrice ? Number(window.ethers.formatUnits(feeData.gasPrice, "gwei")) : null;
+    let walletBalance = state.liveSignals.walletBalance;
+
+    if (state.wallet) {
+      const balance = await provider.getBalance(state.wallet);
+      walletBalance = window.ethers.formatEther(balance);
+    }
+
+    state.liveSignals = {
+      chain: "Mantle Sepolia",
+      blockNumber,
+      gasGwei,
+      walletBalance,
+      updatedAt: new Date().toISOString(),
+    };
+    renderLiveSignals();
+  } catch (error) {
+    els.liveBlock.textContent = "offline";
+    els.liveGas.textContent = "offline";
+    if (!state.wallet) {
+      els.liveBalance.textContent = "connect";
+    }
+  }
+}
+
 function applyScenario() {
   const data = currentScenario();
   document.querySelector("#scenarioTitle").textContent = data.title;
@@ -202,6 +281,7 @@ function buildDecision(status = "simulated") {
     signals: data.signals,
     actionQueue: data.queue,
     memoryUpdate: data.memory,
+    liveSignals: state.liveSignals,
     constitution: {
       maxVolatileExposure: Number(els.volatilityCap.value),
       minimumConfidence: Number(els.confidenceFloor.value),
@@ -277,19 +357,21 @@ async function connectWallet() {
     state.provider = new window.ethers.BrowserProvider(window.ethereum);
     state.signer = await state.provider.getSigner();
   }
+
+  await fetchMantleSignals();
 }
 
 async function deployRegistry() {
-  if (!state.wallet || !state.signer) {
-    await connectWallet();
-  }
-
-  if (!state.signer || !window.ethers) {
-    els.walletState.textContent = "Connect an EVM wallet before deploying.";
-    return;
-  }
-
   try {
+    if (!state.wallet || !state.signer) {
+      await connectWallet();
+    }
+
+    if (!state.signer || !window.ethers) {
+      els.walletState.textContent = "Connect an EVM wallet before deploying.";
+      return;
+    }
+
     els.walletState.textContent = "Preparing registry deployment...";
     const response = await fetch("artifacts/YunoDecisionRegistry.json");
     if (!response.ok) {
@@ -391,14 +473,18 @@ document.querySelectorAll(".scenario-button").forEach((button) => {
 
 els.connectWallet.addEventListener("click", connectWallet);
 els.deployRegistry.addEventListener("click", deployRegistry);
+els.refreshSignals.addEventListener("click", fetchMantleSignals);
 els.runCycle.addEventListener("click", runCycle);
 els.publishDecision.addEventListener("click", publishDecision);
 els.resetCycle.addEventListener("click", resetCycle);
 
 updateRangeLabels();
 updateRegistryState();
+renderLiveSignals();
 applyScenario();
 runCycle();
+fetchMantleSignals();
+window.setInterval(fetchMantleSignals, 30_000);
 
 const canvas = document.querySelector("#agentCanvas");
 const ctx = canvas.getContext("2d");

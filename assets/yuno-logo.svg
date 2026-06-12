@@ -1,0 +1,26 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Yuno logo</title>
+  <desc id="desc">A luminous abstract Y-shaped on-chain worker mark.</desc>
+  <defs>
+    <linearGradient id="core" x1="20" y1="18" x2="108" y2="116" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E6FF74"/>
+      <stop offset="0.48" stop-color="#8DFF8F"/>
+      <stop offset="1" stop-color="#68E7FF"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(64 61) rotate(90) scale(62)">
+      <stop stop-color="#9CFF7D" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#9CFF7D" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft-glow" x="-28" y="-28" width="184" height="184" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="5.5"/>
+    </filter>
+  </defs>
+  <rect width="128" height="128" rx="30" fill="#07110B"/>
+  <path d="M64 8C94.928 8 120 33.0721 120 64C120 94.9279 94.928 120 64 120C33.0721 120 8 94.9279 8 64C8 33.0721 33.0721 8 64 8Z" fill="url(#glow)"/>
+  <path d="M27 35L49.6 63.4C52.2 66.7 56.2 68.6 60.4 68.6H67.6C71.8 68.6 75.8 66.7 78.4 63.4L101 35" stroke="url(#core)" stroke-width="12" stroke-linecap="round" filter="url(#soft-glow)" opacity="0.62"/>
+  <path d="M27 35L49.6 63.4C52.2 66.7 56.2 68.6 60.4 68.6H67.6C71.8 68.6 75.8 66.7 78.4 63.4L101 35" stroke="url(#core)" stroke-width="8" stroke-linecap="round"/>
+  <path d="M64 69V99" stroke="url(#core)" stroke-width="8" stroke-linecap="round"/>
+  <path d="M38 32H25C21.6863 32 19 34.6863 19 38V51" stroke="#6BE7D8" stroke-width="4" stroke-linecap="round" opacity="0.72"/>
+  <path d="M90 96H103C106.314 96 109 93.3137 109 90V77" stroke="#E6FF74" stroke-width="4" stroke-linecap="round" opacity="0.72"/>
+  <circle cx="64" cy="69" r="8" fill="#07110B" stroke="#E6FF74" stroke-width="4"/>
+</svg>

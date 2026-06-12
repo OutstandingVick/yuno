@@ -11,6 +11,7 @@ Built for the Mantle Turing Test Hackathon 2026.
 - Multi-agent reasoning: Alpha Agent, Risk Agent, and Execution Agent.
 - User-defined risk constitution for autonomous strategy limits.
 - Signal intake across wallets, liquidity, yield, and market behavior.
+- Live Mantle Sepolia signal feed for block number, gas, and wallet balance.
 - Action queue that shows the agent's next operational steps.
 - Memory update with confidence accuracy, risk compliance, and reputation delta.
 - Human vs AI portfolio comparison.
@@ -57,6 +58,9 @@ Browser wallet path:
 4. Connect a Mantle Sepolia wallet.
 5. Click Deploy Registry and approve the wallet transaction.
 6. Click Publish Proof and approve the `recordDecision` transaction.
+
+The proof payload includes the current live Mantle signal snapshot so the
+decision record captures the chain conditions Yuno saw before acting.
 
 Terminal deployer path:
 

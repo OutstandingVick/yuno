@@ -14,7 +14,7 @@
     <main class="shell">
       <section class="topbar" aria-label="Yuno control bar">
         <div class="brand-block">
-          <div class="brand-mark" aria-hidden="true">Y</div>
+          <img class="brand-mark" src="assets/yuno-logo.svg" alt="" aria-hidden="true" />
           <div>
             <p class="eyebrow">Mantle Turing Test Hackathon 2026</p>
             <h1>Yuno</h1>
@@ -212,6 +212,30 @@
         </div>
 
         <div class="autonomy-grid">
+          <article class="signal-card live-card">
+            <div class="mini-header">
+              <span>00</span>
+              <strong>Live Mantle Feed</strong>
+            </div>
+            <div class="live-grid">
+              <div>
+                <span>Block</span>
+                <strong id="liveBlock">loading</strong>
+              </div>
+              <div>
+                <span>Gas</span>
+                <strong id="liveGas">loading</strong>
+              </div>
+              <div>
+                <span>Wallet MNT</span>
+                <strong id="liveBalance">connect</strong>
+              </div>
+            </div>
+            <button id="refreshSignals" class="ghost-action compact" type="button">
+              Refresh Signals
+            </button>
+          </article>
+
           <article class="signal-card">
             <div class="mini-header">
               <span>01</span>
