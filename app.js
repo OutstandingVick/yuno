@@ -111,6 +111,7 @@ const els = {
   resetCycle: document.querySelector("#resetCycle"),
   walletState: document.querySelector("#walletState"),
   registryState: document.querySelector("#registryState"),
+  proofModeState: document.querySelector("#proofModeState"),
   liveBlock: document.querySelector("#liveBlock"),
   liveGas: document.querySelector("#liveGas"),
   liveBalance: document.querySelector("#liveBalance"),
@@ -159,11 +160,17 @@ function updateRegistryState() {
   if (state.registryAddress) {
     els.registryState.textContent = `Registry ready: ${state.registryAddress}`;
     els.deployRegistry.textContent = "Registry Ready";
+    els.proofModeState.textContent =
+      "Registry is ready. Publish Proof will submit on-chain when the wallet has Mantle Sepolia gas.";
+    els.proofModeState.classList.add("ready");
     return;
   }
 
   els.registryState.textContent = "Registry not deployed";
   els.deployRegistry.textContent = "Deploy Registry";
+  els.proofModeState.textContent =
+    "Prepared proof mode is active until the registry is deployed or testnet MNT is available.";
+  els.proofModeState.classList.remove("ready");
 }
 
 function formatMnt(value) {
@@ -301,15 +308,32 @@ function addLedgerEntry(decision) {
   const entry = document.createElement("article");
   entry.className = "ledger-entry";
   const time = new Date(decision.payload.timestamp);
+  const status = decision.payload.status ? ` • ${decision.payload.status}` : "";
   entry.innerHTML = `
     <time>${time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</time>
     <div>
       <strong>${decision.payload.scenario}</strong>
-      <p>${decision.payload.thesis}</p>
+      <p>${decision.payload.thesis}${status}</p>
     </div>
     <code>${decision.hash.slice(0, 18)}...</code>
   `;
   els.decisionLog.prepend(entry);
+}
+
+function prepareLocalProof(decision, reason) {
+  state.lastDecision = {
+    ...decision,
+    payload: {
+      ...decision.payload,
+      status: "prepared-local-proof",
+      fallbackReason: reason,
+    },
+  };
+  els.cycleState.textContent = "Proof prepared";
+  els.proofModeState.textContent = `Prepared proof saved locally: ${reason}`;
+  els.proofModeState.classList.remove("ready");
+  document.querySelector("#proofHash").textContent = `${decision.hash.slice(0, 18)}...`;
+  addLedgerEntry(state.lastDecision);
 }
 
 function runCycle() {
@@ -401,16 +425,22 @@ async function publishDecision() {
   document.querySelector("#proofHash").textContent = `${decision.hash.slice(0, 18)}...`;
 
   if (!state.wallet) {
-    addLedgerEntry(state.lastDecision);
+    prepareLocalProof(decision, "wallet not connected");
     els.walletState.textContent = "Proof prepared. Connect wallet to submit on Mantle.";
     return;
   }
 
   const registryAddress = state.registryAddress;
   if (!registryAddress || !window.ethers || !state.signer) {
-    addLedgerEntry(state.lastDecision);
+    prepareLocalProof(decision, "registry not deployed yet");
     els.walletState.textContent =
-      "Proof ready. Deploy registry and refresh to submit a real Mantle transaction.";
+      "Proof prepared locally. Deploy registry when testnet MNT is available.";
+    return;
+  }
+
+  if (Number(state.liveSignals.walletBalance || 0) <= 0) {
+    prepareLocalProof(decision, "wallet has no Mantle Sepolia MNT for gas");
+    els.walletState.textContent = "Proof prepared locally. Waiting for Mantle Sepolia gas.";
     return;
   }
 
@@ -446,6 +476,18 @@ async function publishDecision() {
     addLedgerEntry(state.lastDecision);
     els.walletState.textContent = `Recorded on Mantle: ${receipt.hash.slice(0, 10)}...`;
   } catch (error) {
+    const message = error?.shortMessage || error?.message || "Transaction rejected";
+    const lowerMessage = message.toLowerCase();
+    if (
+      lowerMessage.includes("insufficient funds") ||
+      lowerMessage.includes("funds") ||
+      lowerMessage.includes("gas")
+    ) {
+      prepareLocalProof(decision, "wallet needs Mantle Sepolia MNT for gas");
+      els.walletState.textContent = "Proof prepared locally. Waiting for testnet gas.";
+      return;
+    }
+
     addLedgerEntry(state.lastDecision);
     els.walletState.textContent = error?.shortMessage || error?.message || "Transaction rejected";
   }

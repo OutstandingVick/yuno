@@ -636,6 +636,26 @@ h3 {
   overflow-wrap: anywhere;
 }
 
+.proof-mode-state {
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 200, 87, 0.26);
+  border-radius: 18px;
+  color: #f6dc9b;
+  background:
+    linear-gradient(135deg, rgba(255, 200, 87, 0.12), rgba(107, 231, 216, 0.035)),
+    rgba(0, 0, 0, 0.16);
+  line-height: 1.45;
+}
+
+.proof-mode-state.ready {
+  border-color: rgba(156, 255, 125, 0.28);
+  color: var(--mint);
+  background:
+    linear-gradient(135deg, rgba(156, 255, 125, 0.12), rgba(107, 231, 216, 0.045)),
+    rgba(0, 0, 0, 0.16);
+}
+
 .ledger-entry {
   display: grid;
   grid-template-columns: 120px 1fr 140px;
